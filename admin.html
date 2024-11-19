@@ -1,0 +1,31 @@
+<head>
+  <title>Chatra Admin Example</title>
+</head>
+<body>
+  <div id="messages"></div>
+
+  <script>
+    const source = new EventSource("http://localhost:3000/sse?tienda=a");
+    source.onopen = function () {
+      console.log("listening for new messages");
+    };
+    source.onerror = function () {
+      console.log("there was an error listening for incoming messages");
+    };
+    source.onmessage = function (e) {
+      try {
+        const data = JSON.parse(e.data);
+        switch (data.type) {
+          case "message":
+            const elem = document.createElement("span");
+            elem.innerText = `Mensaje de ${data.clientName}: ${data.text}`;
+            elem.style.display = "block";
+            document.getElementById("messages")?.appendChild(elem);
+            break;
+          default:
+            break;
+        }
+      } catch {}
+    };
+  </script>
+</body>

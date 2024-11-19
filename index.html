@@ -1,0 +1,54 @@
+<html>
+  <head> </head>
+  <body>
+    <h1>Chatra Test</h1>
+
+    <p>Choose a tienda to talk to:</p>
+    <select id="tiendas">
+      <option value="a">Tienda A</option>
+      <option value="b">Tienda B</option>
+      <option value="c">Tienda C</option>
+    </select>
+
+    <script>
+      var chatraScript = null;
+
+      function loadChatra() {
+        if (chatraScript) {
+          document.head.removeChild(chatraScript);
+          chatraScript = null;
+        }
+
+        const c = "Chatra";
+        window.ChatraID = "PcBfDQtcNQDeX7Tet";
+        chatraScript = document.createElement("script");
+
+        window[c] ??= function () {
+          (window[c].q = window[c].q || []).push(arguments);
+        };
+
+        chatraScript.async = true;
+        chatraScript.src = "https://call.chatra.io/chatra.js";
+
+        if (document.head) {
+          document.head.appendChild(chatraScript);
+        }
+      }
+
+      var tienda = "a";
+      window.ChatraIntegration = { tienda };
+
+      document
+        .getElementById("tiendas")
+        .addEventListener("change", function (event) {
+          tienda = event.target.value;
+          console.log(`switching to tienda: ${tienda}`);
+
+          window.ChatraIntegration = { tienda };
+          loadChatra();
+        });
+
+      loadChatra();
+    </script>
+  </body>
+</html>
