@@ -1,11 +1,128 @@
 <head>
   <title>Chatra Admin Example</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/beercss@3.7.12/dist/cdn/beer.min.css"
+    rel="stylesheet"
+  />
+  <script
+    type="module"
+    src="https://cdn.jsdelivr.net/npm/beercss@3.7.12/dist/cdn/beer.min.js"
+  ></script>
+  <script
+    type="module"
+    src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"
+  ></script>
+  <style>
+    :root,
+    body.light {
+      --primary: #bb1614;
+      --on-primary: #ffffff;
+      --primary-container: #ffdad5;
+      --on-primary-container: #410001;
+      --secondary: #775652;
+      --on-secondary: #ffffff;
+      --secondary-container: #ffdad5;
+      --on-secondary-container: #2c1512;
+      --tertiary: #705c2e;
+      --on-tertiary: #ffffff;
+      --tertiary-container: #fcdfa6;
+      --on-tertiary-container: #261a00;
+      --error: #ba1a1a;
+      --on-error: #ffffff;
+      --error-container: #ffdad6;
+      --on-error-container: #410002;
+      --background: #fffbff;
+      --on-background: #201a19;
+      --surface: #fff8f7;
+      --on-surface: #201a19;
+      --surface-variant: #f5ddda;
+      --on-surface-variant: #534341;
+      --outline: #857370;
+      --outline-variant: #d8c2be;
+      --shadow: #000000;
+      --scrim: #000000;
+      --inverse-surface: #362f2e;
+      --inverse-on-surface: #fbeeec;
+      --inverse-primary: #ffb4a9;
+      --surface-dim: #e4d7d5;
+      --surface-bright: #fff8f7;
+      --surface-container-lowest: #ffffff;
+      --surface-container-low: #fef1ef;
+      --surface-container: #f8ebe9;
+      --surface-container-high: #f3e5e3;
+      --surface-container-highest: #ede0de;
+    }
+  </style>
 </head>
-<body>
-  <div id="messages"></div>
+<body class="light">
+  <header>
+    <nav>
+      <h5 class="max">Comunicación a Tiendas Admin</h5>
+      <button class="circle transparent">
+        <i>attach_file</i>
+      </button>
+      <button class="circle transparent">
+        <i>today</i>
+      </button>
+      <button class="circle transparent">
+        <i>more_vert</i>
+      </button>
+    </nav>
+  </header>
+  <main style="padding: 1rem">
+    <h6 id="logged-in-as"></h6>
+    <div
+      id="chat-window"
+      class="border round"
+      style="width: 100%; height: 600px"
+    >
+      <div
+        id="messages"
+        style="padding: 0.6rem; overflow-y: auto; max-height: 100%"
+      ></div>
+    </div>
+    <div class="field suffix border round">
+      <input id="new-message" type="text" placeholder="Envía un mensaje" />
+      <i class="circle transparent" style="cursor: pointer">send</i>
+    </div>
+  </main>
 
   <script>
-    const source = new EventSource("http://localhost:3000/sse?tienda=a");
+    function appendMessage(messageText, fromMe = false) {
+      const row = document.createElement("div");
+      row.style.display = "flex";
+      row.style.marginBottom = "0.5rem";
+      row.style.width = "100%";
+      row.style.justifyContent = fromMe ? "end" : "start";
+
+      const card = document.createElement("article");
+      card.style.width = "fit-content";
+
+      const cardContent = document.createElement("p");
+      cardContent.innerText = messageText;
+
+      row.appendChild(card);
+      card.appendChild(cardContent);
+      document.getElementById("messages")?.appendChild(row);
+    }
+
+    var tienda = "a";
+
+    const loggedInAs = document.getElementById("logged-in-as");
+    loggedInAs.innerText = `Iniciaste sesión como la tienda ${tienda}`;
+
+    const newMessageInput = document.getElementById("new-message");
+    newMessageInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        // TODO: Send message via Chatra API.
+        appendMessage(e.target.value, true);
+        newMessageInput.value = "";
+      }
+    });
+
+    const source = new EventSource(
+      `http://localhost:3000/sse?tienda=${tienda}`
+    );
     source.onopen = function () {
       console.log("listening for new messages");
     };
@@ -17,10 +134,7 @@
         const data = JSON.parse(e.data);
         switch (data.type) {
           case "message":
-            const elem = document.createElement("span");
-            elem.innerText = `Mensaje de ${data.clientName}: ${data.text}`;
-            elem.style.display = "block";
-            document.getElementById("messages")?.appendChild(elem);
+            appendMessage(`${data.clientName} | ${data.text}`);
             break;
           default:
             break;
