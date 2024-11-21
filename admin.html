@@ -106,7 +106,16 @@
       document.getElementById("messages")?.appendChild(row);
     }
 
+    async function reply(clientId, message) {
+      await fetch("http://localhost:3000/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId, text: message }),
+      });
+    }
+
     var tienda = "a";
+    var clientId = null;
 
     const loggedInAs = document.getElementById("logged-in-as");
     loggedInAs.innerText = `Iniciaste sesión como la tienda ${tienda}`;
@@ -114,8 +123,10 @@
     const newMessageInput = document.getElementById("new-message");
     newMessageInput.addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
-        // TODO: Send message via Chatra API.
         appendMessage(e.target.value, true);
+        if (clientId) {
+          reply(clientId, e.target.value);
+        }
         newMessageInput.value = "";
       }
     });
@@ -134,7 +145,9 @@
         const data = JSON.parse(e.data);
         switch (data.type) {
           case "message":
-            appendMessage(`${data.clientName} | ${data.text}`);
+            const message = `${data.clientName} | ${data.text}`;
+            appendMessage(message);
+            clientId = data.clientId;
             break;
           default:
             break;

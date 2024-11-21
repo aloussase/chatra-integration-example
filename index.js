@@ -33,19 +33,35 @@ async function sse(req) {
 }
 
 async function sendToTienda(message) {
-  const tienda = message.client.info?.tienda;
-  console.log(`sending message to tienda: ${tienda}`);
-  if (tienda && sessions.has(tienda)) {
-    const controller = sessions.get(tienda);
-    controller.enqueue(
-      `data: ${JSON.stringify({
-        type: "message",
-        clientName: message.client.displayedName,
-        text: message.messages?.[0].message || "",
-      })}\n\n`
-    );
+  if (message.agents.length == 0) {
+    const tienda = message.client.info?.tienda;
+    console.log(`sending message to tienda: ${tienda}`);
+    if (tienda && sessions.has(tienda)) {
+      const controller = sessions.get(tienda);
+      controller.enqueue(
+        `data: ${JSON.stringify({
+          type: "message",
+          clientId: message.client.id,
+          clientName: message.client.displayedName,
+          text: message.messages?.[0].message || "",
+        })}\n\n`
+      );
+    }
   }
   return new Response();
+}
+
+async function sendMessage(req) {
+  const { clientId, text } = await req.json();
+  await fetch("https://app.chatra.io/api/pushedMessages/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Chatra.Simple PcBfDQtcNQDeX7Tet:pYFsXHWA64rrNQvcCgWFyC9E2RFjwFk9Eiz3KmANFHBjE3nf`,
+    },
+    body: JSON.stringify({ clientId, text }),
+  });
+  return new Response(null, { headers: { ...CORS_HEADERS } });
 }
 
 Bun.serve({
@@ -54,6 +70,10 @@ Bun.serve({
   async fetch(req) {
     if (req.method === "OPTIONS") {
       return new Response(null, { headers: CORS_HEADERS });
+    }
+
+    if (new URL(req.url).pathname === "/reply") {
+      return await sendMessage(req);
     }
 
     if (new URL(req.url).pathname === "/sse") {
