@@ -1,16 +1,111 @@
 <html>
-  <head> </head>
-  <body>
-    <h1>Chatra Test</h1>
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/beercss@3.7.12/dist/cdn/beer.min.css"
+      rel="stylesheet"
+    />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/beercss@3.7.12/dist/cdn/beer.min.js"
+    ></script>
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"
+    ></script>
+    <style>
+      :root,
+      body.light {
+        --primary: #bb1614;
+        --on-primary: #ffffff;
+        --primary-container: #ffdad5;
+        --on-primary-container: #410001;
+        --secondary: #775652;
+        --on-secondary: #ffffff;
+        --secondary-container: #ffdad5;
+        --on-secondary-container: #2c1512;
+        --tertiary: #705c2e;
+        --on-tertiary: #ffffff;
+        --tertiary-container: #fcdfa6;
+        --on-tertiary-container: #261a00;
+        --error: #ba1a1a;
+        --on-error: #ffffff;
+        --error-container: #ffdad6;
+        --on-error-container: #410002;
+        --background: #fffbff;
+        --on-background: #201a19;
+        --surface: #fff8f7;
+        --on-surface: #201a19;
+        --surface-variant: #f5ddda;
+        --on-surface-variant: #534341;
+        --outline: #857370;
+        --outline-variant: #d8c2be;
+        --shadow: #000000;
+        --scrim: #000000;
+        --inverse-surface: #362f2e;
+        --inverse-on-surface: #fbeeec;
+        --inverse-primary: #ffb4a9;
+        --surface-dim: #e4d7d5;
+        --surface-bright: #fff8f7;
+        --surface-container-lowest: #ffffff;
+        --surface-container-low: #fef1ef;
+        --surface-container: #f8ebe9;
+        --surface-container-high: #f3e5e3;
+        --surface-container-highest: #ede0de;
+      }
 
-    <p>Choose a tienda to talk to:</p>
-    <select id="tiendas">
-      <option value="a">Tienda A</option>
-      <option value="b">Tienda B</option>
-      <option value="c">Tienda C</option>
-    </select>
+      main {
+        padding: 1rem;
+      }
+
+      #select-tienda {
+        width: fit-content;
+      }
+    </style>
+  </head>
+  <body class="light">
+    <header>
+      <nav>
+        <h5 class="max">Comunicación a Tiendas</h5>
+        <button class="circle transparent">
+          <i>attach_file</i>
+        </button>
+        <button class="circle transparent">
+          <i>today</i>
+        </button>
+        <button class="circle transparent">
+          <i>more_vert</i>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <div style="display: flex; gap: 1rem; align-items: center">
+        <p>
+          <span id="chatting-with"></span>
+          ¿Deseas hablar con otra?
+        </p>
+        <div class="field border suffix label" id="select-tienda">
+          <select id="tiendas">
+            <option value="a">Tienda A</option>
+            <option value="b">Tienda B</option>
+            <option value="c">Tienda C</option>
+          </select>
+          <label>Hablar con</label>
+          <i>arrow_drop_down</i>
+        </div>
+      </div>
+      <div
+        id="chat"
+        style="width: 60%; height: 600px; margin: auto; border-radius: 10px"
+      ></div>
+    </main>
 
     <script>
+      window.ChatraSetup = {
+        mode: "frame",
+        injectTo: "chat",
+      };
+
       var chatraScript = null;
 
       function loadChatra() {
@@ -35,16 +130,22 @@
         }
       }
 
+      function switchToTienda(tienda) {
+        window.ChatraIntegration = { tienda };
+        document.getElementById(
+          "chatting-with"
+        ).innerText = `Hablando con la tienda ${tienda}`;
+      }
+
       var tienda = "a";
-      window.ChatraIntegration = { tienda };
+      switchToTienda(tienda);
 
       document
         .getElementById("tiendas")
         .addEventListener("change", function (event) {
           tienda = event.target.value;
           console.log(`switching to tienda: ${tienda}`);
-
-          window.ChatraIntegration = { tienda };
+          switchToTienda(tienda);
           loadChatra();
         });
 
