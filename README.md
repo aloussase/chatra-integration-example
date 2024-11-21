@@ -6,3 +6,13 @@ It features 3 modules:
 2. The **admin panel** listens to the server's SSE stream for new messages from the client. It also posts
    replies to an endpoint in our server.
 3. The **client** mounts the Chatra widget to communicate with an agent. It is oblivious to both the server and the admin panel.
+
+## Running
+
+Open both `html` files in your browser and run the server with [bun](https://bun.sh/).
+
+You'll need to provide your Chatra keys in an `.env` file for Bun to read.
+
+## License
+
+MIT
