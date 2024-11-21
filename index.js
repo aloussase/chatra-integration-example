@@ -57,7 +57,7 @@ async function sendMessage(req) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Chatra.Simple PcBfDQtcNQDeX7Tet:pYFsXHWA64rrNQvcCgWFyC9E2RFjwFk9Eiz3KmANFHBjE3nf`,
+      Authorization: `Chatra.Simple ${process.env.CHATRA_PUBLIC_KEY}:${process.env.CHATRA_PRIVATE_KEY}`,
     },
     body: JSON.stringify({ clientId, text }),
   });
